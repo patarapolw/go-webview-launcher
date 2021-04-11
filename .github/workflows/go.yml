@@ -54,7 +54,7 @@ jobs:
       run: |
         mkdir webview-launcher-mac
         mv webview-launcher webview-launcher-mac/webview-launcher.app
-        zip webview-launcher-mac.zip webview-launcher-mac
+        zip -r webview-launcher-mac.zip webview-launcher-mac
     
     - name: Upload binaries to release (macOS)
       if: matrix.platform ==  'macos-latest'
@@ -82,6 +82,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: webview-launcher-windows.tar
-        tag: ${{ github.ref }}
+        tag: ${{ github.ref }}-release
         overwrite: true
         body: Executable for Windows
