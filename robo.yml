@@ -1,0 +1,4 @@
+start:
+  command: |
+    go build
+    ./go-webview-launcher
