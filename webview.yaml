@@ -7,4 +7,5 @@ cmd:
 #     - PORT=3000
 # url: http://localhost:3000
 # dir: public
+title: WebView Launcher
 debug: false

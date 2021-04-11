@@ -59,6 +59,7 @@ type config struct {
 	Cmd   exec.Cmd
 	Kill  exec.Cmd
 	URL   string
+	Title string
 	Dir   string
 	Debug bool
 }
@@ -139,8 +140,8 @@ func main() {
 	fmt.Println("Opening: " + cfg.URL)
 
 	for {
-		resp, err := http.Get(cfg.URL)
-		if err == nil && resp.StatusCode == 200 {
+		_, err := http.Get(cfg.URL)
+		if err == nil {
 			break
 		}
 	}
@@ -149,6 +150,11 @@ func main() {
 	defer w.Destroy()
 
 	w.SetSize(int(C.display_width()), int(C.display_height()), webview.HintNone)
+
+	if cfg.Title != "" {
+		w.SetTitle(cfg.Title)
+	}
+
 	w.Navigate(cfg.URL)
 	w.Run()
 }
