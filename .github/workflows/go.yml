@@ -32,10 +32,56 @@ jobs:
     - name: Build
       run: go build -o webview-launcher-${{ matrix.platform }}
       
-    - name: Upload binaries to release
+    # Linux
+    - name: Packaging (Linux)
+      if: matrix.platform ==  'macos-latest'
+      run: |
+        mv webview-launcher-${{ matrix.platform }} webview-launcher-linux
+
+    - name: Upload binaries to release (Linux)
+      if: matrix.platform ==  'ubuntu-latest'
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: webview-launcher-${{ matrix.platform }}
+        file: webview-launcher-linux
         tag: ${{ github.ref }}
         overwrite: true
+        body: Executable for Linux
+
+    # macOS
+    - name: Packaging (macOS)
+      if: matrix.platform ==  'macos-latest'
+      run: |
+        mkdir webview-launcher-mac
+        mv webview-launcher-${{ matrix.platform }} webview-launcher-mac/webview-launcher-mac.app
+        zip webview-launcher-mac.zip webview-launcher-mac
+    
+    - name: Upload binaries to release (macOS)
+      if: matrix.platform ==  'macos-latest'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: webview-launcher-mac.zip
+        tag: ${{ github.ref }}
+        overwrite: true
+        body: Executable for macOS
+
+    # Windows
+    - name: Packaging (Windows)
+      if: matrix.platform ==  'windows-latest'
+      run: |
+        mkdir webview-launcher-windows
+        mv webview-launcher-${{ matrix.platform }} webview-launcher-windows\\webview-launcher-windows.exe
+        curl https://github.com/webview/webview/raw/master/dll/x64/WebView2Loader.dll --output webview-launcher-windows\\WebView2Loader.dll
+        curl https://github.com/webview/webview/raw/master/dll/x64/webview.dll --output webview-launcher-windows\\webview.dll
+        tar -cvf webview-launcher-windows.tar webview-launcher-windows
+    
+    - name: Upload binaries to release (Windows)
+      if: matrix.platform ==  'windows-latest'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: webview-launcher-windows.tar
+        tag: ${{ github.ref }}
+        overwrite: true
+        body: Executable for Windows
