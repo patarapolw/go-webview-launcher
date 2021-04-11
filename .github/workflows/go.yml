@@ -30,13 +30,13 @@ jobs:
         sudo apt-get install -y webkit2gtk-4.0
 
     - name: Build
-      run: go build -o webview-launcher-${{ matrix.platform }}
+      run: go build -o webview-launcher
       
     # Linux
     - name: Packaging (Linux)
-      if: matrix.platform ==  'macos-latest'
+      if: matrix.platform ==  'ubuntu-latest'
       run: |
-        mv webview-launcher-${{ matrix.platform }} webview-launcher-linux
+        mv webview-launcher webview-launcher-linux
 
     - name: Upload binaries to release (Linux)
       if: matrix.platform ==  'ubuntu-latest'
@@ -53,7 +53,7 @@ jobs:
       if: matrix.platform ==  'macos-latest'
       run: |
         mkdir webview-launcher-mac
-        mv webview-launcher-${{ matrix.platform }} webview-launcher-mac/webview-launcher-mac.app
+        mv webview-launcher webview-launcher-mac/webview-launcher.app
         zip webview-launcher-mac.zip webview-launcher-mac
     
     - name: Upload binaries to release (macOS)
@@ -71,7 +71,7 @@ jobs:
       if: matrix.platform ==  'windows-latest'
       run: |
         mkdir webview-launcher-windows
-        mv webview-launcher-${{ matrix.platform }} webview-launcher-windows\\webview-launcher-windows.exe
+        mv webview-launcher webview-launcher-windows\\webview-launcher-windows.exe
         curl https://github.com/webview/webview/raw/master/dll/x64/WebView2Loader.dll --output webview-launcher-windows\\WebView2Loader.dll
         curl https://github.com/webview/webview/raw/master/dll/x64/webview.dll --output webview-launcher-windows\\webview.dll
         tar -cvf webview-launcher-windows.tar webview-launcher-windows
