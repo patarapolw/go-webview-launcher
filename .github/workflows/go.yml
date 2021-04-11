@@ -10,6 +10,7 @@ jobs:
 
   build:
     strategy:
+      fail-fast: false
       matrix:
         platform: [macos-latest, ubuntu-latest, windows-latest]
 
@@ -35,6 +36,6 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/release/webview-launcher-${{ matrix.platform }}
+        file: webview-launcher-${{ matrix.platform }}
         tag: ${{ github.ref }}
         overwrite: true
