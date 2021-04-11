@@ -44,7 +44,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: webview-launcher-linux
-        tag: ${{ github.ref }}
+        tag: release-${{ github.ref }}
         overwrite: true
         body: Executable for Linux
 
@@ -62,7 +62,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: webview-launcher-mac.zip
-        tag: ${{ github.ref }}
+        tag: release-${{ github.ref }}
         overwrite: true
         body: Executable for macOS
 
@@ -82,6 +82,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: webview-launcher-windows.tar
-        tag: ${{ github.ref }}-release
+        tag: release-${{ github.ref }}
         overwrite: true
         body: Executable for Windows
