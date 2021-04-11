@@ -29,8 +29,13 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y webkit2gtk-4.0
 
-    - name: Build
+    - name: Build (non-Windows)
+      if: matrix.platform !=  'windows-latest'
       run: go build -o webview-launcher
+
+    - name: Build (Windows)
+      if: matrix.platform ==  'windows-latest'
+      run: go build -ldflags="-H windowsgui" -o webview-launcher
       
     # Linux
     - name: Packaging (Linux)
