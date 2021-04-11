@@ -43,6 +43,7 @@ import "C"
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -58,6 +59,7 @@ type config struct {
 	Cmd   exec.Cmd
 	Kill  exec.Cmd
 	URL   string
+	Dir   string
 	Debug bool
 }
 
@@ -93,17 +95,7 @@ func main() {
 		}
 
 		if port == "0" {
-			listener, err := net.Listen("tcp", ":0")
-			if err != nil {
-				panic(err)
-			}
-
-			port = strconv.Itoa(listener.Addr().(*net.TCPAddr).Port)
-
-			err = listener.Close()
-			if err != nil {
-				panic(err)
-			}
+			port = getRandomPort()
 		}
 
 		cmd.Env = append(cmd.Env, "PORT="+port)
@@ -129,6 +121,15 @@ func main() {
 				}
 			}
 		}()
+	} else if cfg.URL == "" && cfg.Dir != "" {
+		listener, err := net.Listen("tcp", "127.0.0.1:0")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer listener.Close()
+		go http.Serve(listener, http.FileServer(http.Dir(cfg.Dir)))
+
+		port = strconv.Itoa(listener.Addr().(*net.TCPAddr).Port)
 	}
 
 	if cfg.URL == "" {
@@ -150,4 +151,20 @@ func main() {
 	w.SetSize(int(C.display_width()), int(C.display_height()), webview.HintNone)
 	w.Navigate(cfg.URL)
 	w.Run()
+}
+
+func getRandomPort() string {
+	listener, err := net.Listen("tcp", ":0")
+	if err != nil {
+		panic(err)
+	}
+
+	port := strconv.Itoa(listener.Addr().(*net.TCPAddr).Port)
+
+	err = listener.Close()
+	if err != nil {
+		panic(err)
+	}
+
+	return port
 }

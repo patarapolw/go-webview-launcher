@@ -2,8 +2,9 @@ cmd:
   path: java
   args:
     - -jar
-    - src-server/app/build/libs/app-all.jar
+    - src-server/simple-server.jar
 #   env:
 #     - PORT=3000
 # url: http://localhost:3000
+# dir: public
 debug: false
