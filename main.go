@@ -44,6 +44,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
@@ -76,7 +77,12 @@ func main() {
 	port := "0"
 
 	if cfg.Cmd.Path != "" {
-		for _, env := range cfg.Cmd.Env {
+		cmd := exec.Command(cfg.Cmd.Path, cfg.Cmd.Args...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Env = cfg.Cmd.Env
+
+		for _, env := range cmd.Env {
 			kv := strings.Split(env, "=")
 			v := strings.Join(kv[1:], "=")
 			os.Setenv(kv[0], v)
@@ -100,24 +106,24 @@ func main() {
 			}
 		}
 
-		cfg.Cmd.Env = append(cfg.Cmd.Env, "PORT="+port)
+		cmd.Env = append(cmd.Env, "PORT="+port)
 
-		e := cfg.Cmd.Start()
+		e := cmd.Start()
 		if e != nil {
 			panic(e)
 		}
 
-		for _, env := range cfg.Cmd.Env {
-			kv := strings.Split(env, "=")
-			os.Setenv(kv[0], strings.Join(kv[1:], "="))
-		}
-
-		defer cfg.Cmd.Process.Kill()
+		defer cmd.Process.Kill()
 		defer func() {
 			if cfg.Kill.Path != "" {
-				cfg.Kill.Env = append(cfg.Kill.Env, "PORT="+port)
+				cmd := exec.Command(cfg.Kill.Path, cfg.Kill.Args...)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				cmd.Env = cfg.Kill.Env
 
-				e := cfg.Kill.Run()
+				cmd.Env = append(cmd.Env, "PORT="+port)
+
+				e := cmd.Run()
 				if e != nil {
 					panic(e)
 				}
@@ -127,6 +133,15 @@ func main() {
 
 	if cfg.URL == "" {
 		cfg.URL = fmt.Sprintf("http://localhost:%s", port)
+	}
+
+	fmt.Println("Opening: " + cfg.URL)
+
+	for {
+		resp, err := http.Get(cfg.URL)
+		if err == nil && resp.StatusCode == 200 {
+			break
+		}
 	}
 
 	w := webview.New(cfg.Debug)

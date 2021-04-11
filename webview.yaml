@@ -1,6 +1,8 @@
 cmd:
-  path: /home/polv/Downloads/neutralinojs-v1.9.0/neutralino-linux
-  args: []
+  path: java
+  args:
+    - -jar
+    - src-server/app/build/libs/app-all.jar
 #   env:
 #     - PORT=3000
 # url: http://localhost:3000
